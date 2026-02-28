@@ -1,7 +1,34 @@
-Seja bem vindo ao projetox, um projeto pessoal a carater de estudo que acabou indo para a produção.
+# CardápioPró Delivery
 
-Sempre que alterar algo em functions/index.js rode firebase deploy --only functions:checkTrialExpiration para fazer deploy das mudanças no firebase.
+> Plataforma SaaS de alta performance para geração de cardápios digitais e gestão de pedidos de delivery. Desenvolvida com Vue.js, TypeScript e arquitetura serverless no Firebase.
 
-A data de criação da conta é cadastrada no banco de dados através do arquivo auth, na hora de cadastro.
+O CardápioPró Delivery é um SaaS criado para digitalizar e escalar o atendimento de restaurantes e lanchonetes. O sistema automatiza desde a montagem da vitrine de produtos até a gestão complexa de taxas de entrega e integração de pagamentos com o Stripe. Uma solução completa rodando em uma infraestrutura moderna, segura e desenhada para ter alta disponibilidade.
 
-O containerCard.vue pode ser utilizado em qualquer tela, porém se for necessário alterar posição, tamanho ou altura, será necessário colocar uma div em torno dele e alterar apenas na div para não dá problema em outras telas.
+## 🚀 Funcionalidades Principais
+
+* Vitrine Digital Dinâmica: Geração de cardápios interativos em tempo real para os clientes finais.
+* Gestão de Pedidos: Painel administrativo completo para o restaurante acompanhar o status de cada entrega.
+* Pagamentos Integrados: Checkout seguro processado via Stripe diretamente na plataforma.
+* Autenticação Blindada: Sistema de login e controle de acesso via Firebase Auth.
+* Arquitetura Multi-tenant: Estrutura desenhada para suportar múltiplos lojistas isolados no mesmo banco de dados.
+
+## 🛠️ Tecnologias e Engenharia
+
+* Frontend: Vue.js com TypeScript e Tailwind CSS para uma interface rápida e reativa.
+* Backend e Banco de Dados: Firebase Serverless (Firestore e Cloud Functions) rodando sobre Node.js.
+* Pagamentos: Infraestrutura do Stripe.
+* Hospedagem: Vercel (Frontend) e Google Cloud (Backend).
+
+## ⚙️ Como executar este reator localmente
+
+1. Clone este repositório em sua máquina:
+   `git clone https://github.com/erikborges013/cardapio-pro-delivery.git`
+
+2. Instale as dependências do projeto:
+   `npm install`
+
+3. Configure o cofre de variáveis de ambiente:
+   Crie um arquivo `.env` na raiz do projeto baseado no arquivo `.env.example` e insira as suas chaves públicas do Firebase e do Stripe.
+
+4. Inicie o servidor de desenvolvimento:
+   `npm run dev`
