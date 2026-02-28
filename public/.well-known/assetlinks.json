@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.vercel.cardapiodigital.twa",
+      "sha256_cert_fingerprints": ["52:66:10:86:1D:33:28:30:A0:CD:AA:B5:59:C7:49:E1:7E:78:BD:65:B9:82:CA:D6:19:61:4A:FE:98:A4:07:70"]
+    }
+  }
+]

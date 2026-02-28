@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true, // A MUDANÇA MAIS IMPORTANTE: Ativa verificação rigorosa (null, any implícito, etc.)
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"],
+    "skipLibCheck": true,
+    "noEmit": true,
+
+    // Permite JS, útil durante a migração, mas avisa sobre erros
+    "allowJs": true,
+    "outDir": "./dist",
+
+    // Importante para o Vite entender imports de imagens e variáveis de ambiente
+    "types": ["vite/client", "vite-plugin-pwa/client"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue" // ESSENCIAL: Faz o TS ler seus arquivos Vue
+  ],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
