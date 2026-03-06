@@ -1,7 +1,7 @@
 <template>
   <div class="lista-produtos">
   <div
-    class="card-produto"
+    class="card-produto flex items-center justify-center"
     v-for="lanche in storeProdutos.produtos"
     :key="lanche.id"
   >
@@ -43,8 +43,9 @@ const router = useRouter();
     }
     try {
       await deletar(`usuarios/${uid}/lanches/${id}`, imagemURL)
+      storeProdutos.buscarProdutos();
     } catch (error) {
-      
+      console.error("Falha ao tentar deletar produto");
     }
   }
 const editarProduto = (lanche: IProduto) => {
@@ -64,7 +65,6 @@ const editarProduto = (lanche: IProduto) => {
 }
 
 .card-produto {
-  display: flex;
   gap: 1rem;
   padding: 1rem;
   border-radius: 10px;

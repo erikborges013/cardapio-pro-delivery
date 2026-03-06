@@ -5,18 +5,24 @@
         <img :src="imagemPrevia ?? defaultImage" alt="imagem do produto" class="adicionar-imagem" />
       </label>
       <input type="file" @change="exibirImagem" id="imagem" accept="image/*" class="input-adicionar-imagem" />
+        <p>Nome do produto</p>
       <BaseInput :tipo="'text'" :texto-place-holder="'Nome do produto'" :obrigatorio="true" v-model="nome"
         :quantidade="30" />
+        <p>Ingredientes</p>
       <BaseInput :tipo="'text'" :texto-place-holder="'Ingredientes'" :obrigatorio="true" v-model="ingredientes" />
-      <BaseInput :tipo="'text'" :texto-place-holder="'Peso (ex: 250g)'" :obrigatorio="false" v-model="peso" />
-      <select id="produto-categoria" class="selecionar-categoria" v-model="categoriaId">
+      <p>Serve quantas pessoas</p>
+      <BaseInput :tipo="'number'" :texto-place-holder="'Serve quantas pessoas?'" :obrigatorio="false" v-model="serveQuantasPessoas" />
+      <p>Categorias</p>
+      <select id="produto-categoria" class="selecionar-categoria text-center" v-model="categoriaId">
         <option value="" disabled>Selecione a categoria</option>
         <option v-for="categoria in categoriasDados.categorias" :key="categoria.dados.nome" :value="categoria.id">{{
           categoria.dados.nome }}</option>
       </select>
+      <p>Preço</p>
       <BaseInput :tipo="'number'" step="0.01" :texto-place-holder="'Preço do produto'" :obrigatorio="true"
         v-model="preco" />
-      <a @click="mostrarTelaAdicionais" class="btn-adicionais" id="abrir-adicionais">Selecionar adicionais</a>
+        <p class="text-left">Adicionais</p>
+      <a @click="mostrarTelaAdicionais" class="btn-adicionais text-center" id="abrir-adicionais">Selecionar adicionais</a>
       <div class="adicionais-selecionados"><button type="button" v-for="adicional in adicionais">{{ adicional.nome
       }}</button></div>
       <section class="section_botoes" >
@@ -56,7 +62,7 @@ const userId = useAuthStore().uid;
 const imagem = ref<File>()
 const nome = ref<string>();
 const ingredientes = ref<string>();
-const peso = ref<string>();
+const serveQuantasPessoas = ref<string>();
 const categoriaId = ref<string>("");
 const preco = ref<number | string>();
 const telaAdicionaisAtiva = ref<boolean>(false);
@@ -86,7 +92,7 @@ if (produtoEmEdicao !== null) {
   imagemPrevia.value = produtoEmEdicao.imagemURL;
   nome.value = produtoEmEdicao.nome;
   ingredientes.value = produtoEmEdicao.ingredientes;
-  peso.value = produtoEmEdicao.peso;
+  serveQuantasPessoas.value = produtoEmEdicao.serveQuantasPessoas;
   categoriaId.value = produtoEmEdicao.categoriaId;
   preco.value = produtoEmEdicao.preco;
   adicionais.value = produtoEmEdicao.adicionais;
@@ -98,7 +104,7 @@ function montarDados() {
   return {
     nome: nome.value,
     ingredientes: ingredientes.value,
-    peso: peso.value,
+    serveQuantasPessoas: serveQuantasPessoas.value,
     categoriaId: categoriaId.value,
     preco: converterParaNumber(preco.value),
     adicionais: adicionais.value || [],

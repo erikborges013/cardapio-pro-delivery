@@ -2,13 +2,11 @@
 
 > Plataforma SaaS de alta performance para geração de cardápios digitais e gestão de pedidos de delivery. Desenvolvida com Vue.js, TypeScript e arquitetura serverless no Firebase.
 
-O CardápioPró Delivery é um SaaS criado para digitalizar e escalar o atendimento de restaurantes e lanchonetes. O sistema automatiza desde a montagem da vitrine de produtos até a gestão complexa de taxas de entrega e integração de pagamentos com o Stripe. Uma solução completa rodando em uma infraestrutura moderna, segura e desenhada para ter alta disponibilidade.
+O CardápioPró Delivery é um SaaS criado para digitalizar e escalar o atendimento de restaurantes e lanchonetes. O sistema automatiza desde a montagem da vitrine de produtos até a gestão complexa de taxas de entrega. Uma solução completa rodando em uma infraestrutura moderna, segura e desenhada para ter alta disponibilidade.
 
 ## 🚀 Funcionalidades Principais
 
 * Vitrine Digital Dinâmica: Geração de cardápios interativos em tempo real para os clientes finais.
-* Gestão de Pedidos: Painel administrativo completo para o restaurante acompanhar o status de cada entrega.
-* Pagamentos Integrados: Checkout seguro processado via Stripe diretamente na plataforma.
 * Autenticação Blindada: Sistema de login e controle de acesso via Firebase Auth.
 * Arquitetura Multi-tenant: Estrutura desenhada para suportar múltiplos lojistas isolados no mesmo banco de dados.
 
@@ -19,7 +17,7 @@ O CardápioPró Delivery é um SaaS criado para digitalizar e escalar o atendime
 * Pagamentos: Infraestrutura do Stripe.
 * Hospedagem: Vercel (Frontend) e Google Cloud (Backend).
 
-## ⚙️ Como executar este reator localmente
+## ⚙️ Como executar este projeto localmente
 
 1. Clone este repositório em sua máquina:
    `git clone https://github.com/erikborges013/cardapio-pro-delivery.git`

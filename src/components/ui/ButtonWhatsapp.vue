@@ -10,7 +10,7 @@
 <style lang="scss" scoped>
     @reference "../../assets/tailwind.css";
   .whatsapp-icon {
-    @apply w-18 fixed z-1000 bottom-5 right-5 cursor-pointer;
+    @apply w-15 fixed z-1000 bottom-5 right-5 cursor-pointer;
   }
 
 </style>

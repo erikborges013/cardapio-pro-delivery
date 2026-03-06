@@ -1,5 +1,5 @@
 <template>
-    <button class="botao-excluir" @click="$emit('confirmar')"><img :src="iconeDelete" alt="icone"
+    <button class="flex justify-center items-center botao-excluir" @click="$emit('confirmar')"><img :src="iconeDelete" alt="icone"
             class="icone-delete"></button>
 </template>
 
@@ -14,9 +14,13 @@ defineEmits(['confirmar']);
     border-radius: 5px;
     cursor: pointer;
     border: none;
+    height: 75px;
+    max-height: 75px;
+    min-width: 30px;
 }
 
 .icone-delete {
     width: 22px;
+    max-height: 22px;
 }
 </style>

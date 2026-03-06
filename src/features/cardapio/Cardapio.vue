@@ -68,7 +68,7 @@
                         <div v-for="produto in grupo.produtos" :key="produto.id"
                             class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex gap-4 hover:shadow-md transition cursor-pointer"
                             @click="abrirModalProduto(produto)">
-                            <div class="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                            <div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden bg-gray-100">
                                 <img :src="produto.imagemURL || defaultImage" :alt="produto.nome"
                                     class="w-full h-full object-cover" />
                             </div>
@@ -204,7 +204,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, reactive, onBeforeMount } from 'vue';
+import { ref, computed, onMounted, watch, reactive } from 'vue';
 import { useRoute } from 'vue-router';
 // Stores
 import { useCategoriaStore } from '../../stores/listaDeCategoriasStore';
@@ -213,13 +213,9 @@ import { useCarrinhoStore } from '../../stores/carrinhoStore';
 import { informacoesDoCardapioStore } from '../../stores/informacoesDoCardapioStore';
 import { useTaxasDeEntregaStore } from '../../stores/taxasDeEntregaStore';
 import { formasDePagamentoStore } from '../../stores/formasDePagamentoStore';
-// Interfaces e Utils
 import { IProduto } from '../../interfaces/Iproduto';
 import { converterEmReais } from '../../utils/converterEmReais';
-// Components e Serviços
 import CarrinhoLateral from './CarrinhoLateral.vue';
-import { validarAcessoCardapioPublico } from '../../servicos/validacaoCardapioPublico';
-import BaseInputCheckBox from '../../components/ui/BaseInputCheckBox.vue';
 import IAdicionais from '../../interfaces/IAdicionais';
 import { useAdicionaisStore } from '../../stores/listaDeAdicionaisStore';
 import defaultImage from "../../../assets/vetor-sem-imagem.jpg";
@@ -230,7 +226,6 @@ export type AdicionalSelecionado = IAdicionais & {
 }
 const route = useRoute();
 
-// Instância das Stores
 const categoriasStore = useCategoriaStore();
 const produtosStore = listaDeProdutos();
 const carrinhoStore = useCarrinhoStore();
@@ -239,7 +234,6 @@ const taxasStore = useTaxasDeEntregaStore();
 const pagamentosStore = formasDePagamentoStore();
 const adicionaisStore = useAdicionaisStore();
 
-// Estado Local
 const categoriaSelecionada = ref<string | null>(null);
 const produtoParaModal = ref<IProduto | null>(null);
 const loading = ref(true);
@@ -278,7 +272,6 @@ function calcularAdicionais() {
     return total;
 }
 
-// Computed: Agrupa produtos
 const produtosAgrupados = computed(() => {
     let produtos = produtosStore.produtos;
 
@@ -288,7 +281,6 @@ const produtosAgrupados = computed(() => {
 
     const grupos: Array<{ categoriaId: string; nomeCategoria: string; produtos: IProduto[] }> = [];
 
-    // Mapear categorias para garantir ordem e nomes
     categoriasStore.categorias.forEach(cat => {
         if (categoriaSelecionada.value && categoriaSelecionada.value !== cat.id) return;
 
@@ -306,7 +298,6 @@ const produtosAgrupados = computed(() => {
     return grupos;
 });
 
-// Ações
 function abrirModalProduto(produto: IProduto) {
     produtoParaModal.value = produto;
     quantidadeSelecionada.value = 1;
@@ -341,24 +332,11 @@ function fecharModal() {
     produtoParaModal.value = null;
 }
 
-// Ciclo de Vida
 onMounted(async () => {
     try {
         const uidDaRota = route.params.uid as string;
 
         if (uidDaRota) {
-            // 1. Validação de Acesso (Teste Grátis ou Assinatura)
-            const temAcesso = await validarAcessoCardapioPublico(uidDaRota);
-
-
-            // Lógica corrigida: Se NÃO tem acesso, bloqueia
-            if (!temAcesso) {
-                contaAtiva.value = false;
-                loading.value = false;
-                return; // Para aqui e não carrega o resto
-            }
-
-            // 2. Se tem acesso, carrega os dados
             await Promise.all([
                 categoriasStore.puxarCategorias(uidDaRota),
                 produtosStore.buscarProdutos(uidDaRota),

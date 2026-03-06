@@ -1,5 +1,5 @@
 <template>
-    <button class="botao-editar" @click="$emit('confirmar')"><img :src="iconeEditar" alt="icone"
+    <button class="flex justify-center items-center botao-editar" @click="$emit('confirmar')"><img :src="iconeEditar" alt="icone"
             class="icone-editar"></button>
 </template>
 
@@ -14,6 +14,9 @@ defineEmits(['confirmar']);
     border-radius: 5px;
     cursor: pointer;
     border: none;
+    height: 75px;
+    max-height: 75px;
+    min-width: 30px;
 }
 
 .icone-editar {

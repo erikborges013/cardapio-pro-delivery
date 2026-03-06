@@ -20,7 +20,7 @@ export async function verificarSeProdutosTemAdicional(uid: string, id: string): 
                     const dados = {
                         nome: produto.nome,
                         ingredientes: produto.ingredientes,
-                        peso: produto.peso,
+                        serveQuantasPessoas: produto.serveQuantasPessoas,
                         categoriaId: produto.categoriaId,
                         preco: converterParaNumber(produto.preco),
                         adicionais: produto.adicionais.filter(adicional => adicional.id !== id),

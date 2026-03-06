@@ -9,6 +9,6 @@ export interface IProduto {
     imagemURL: string,
     ingredientes: string,
     nome: string,
-    peso: string,
+    serveQuantasPessoas: string,
     preco: number,
 }

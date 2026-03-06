@@ -55,20 +55,18 @@ async function irPara() {
     signOut(auth)
       .then(() => {
         alert("Você foi desconectado.");
-        sessionStorage.removeItem("usuario");
         window.location.href = '/login';
       })
       .catch((error) => {
         console.error("Erro ao fazer logout:", error);
         alert("Erro ao fazer logout.");
       });
-      return;
+    return;
   }
   if (props.ehBotaoAssinar === true) {
     carregando.value = true;
     textoBotaoPlano.value = "Carregando...";
     botaoDesabilitado.value = "botao-desabilitado";
-    console.log("Cliquei");
     try {
       await configStripe();
     } catch (error) {

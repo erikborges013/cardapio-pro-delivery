@@ -121,12 +121,10 @@ router.beforeEach(async (to, from, next) => {
   });
 
   if (requiresAuth) {
-    // Se não está logado, chuta para o login na hora
     if (!currentUser) {
       return next("/login");
     }
 
-    // Agora é seguro invocar a store, pois o app já inicializou e o usuário existe
     const store = informacoesDoCardapioStore();
 
     if (!store.informacoesDoEstabelecimento) {

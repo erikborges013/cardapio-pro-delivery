@@ -1,37 +1,33 @@
 <template>
   <section class="sessao-painel-administrativo">
-    <div v-if="uid">
-      <header>
-        <p v-if="testeGratisAtivo" class="texto-teste-gratis">{{ textoTesteGratis }}</p>
-        <p v-else-if="planoEmDia" class="texto-teste-gratis">Plano confirmado! Continue usando sem interrupções.</p>
-        <p v-else class="texto-cardapio-desativado">Cardápio pausado. Assine um plano.</p>
+    <div v-if="carregando">
+      <BasePreload />
+    </div>
+    <div v-else>
+      <header class="pt-10 md:pt-0">
+        <h1 class="text-center">Seja bem vindo <br> {{ nomeEstabelecimento }}</h1>
       </header>
       <main>
         <section class="sessao-link-do-cardapio">
           <LinkCardapio />
         </section>
         <section class="opcoes__admin" id="opcoes__admin">
-          <Cards v-for="card in cardsFiltrados" :key="card.pagina || 'paginaAssinatura'" :pagina="card.pagina"
-            :caminho-icone="card.caminhoIcone" :texto="card.texto" :ehBotaoSair="card.ehBotaoSair"
-            :ehBotaoAssinar="card.ehBotaoAssinar" @configActive="showConfigOptions" />
+          <Cards v-for="card in cards" :key="card.texto" :pagina="card.pagina" :caminho-icone="card.caminhoIcone"
+            :texto="card.texto" :ehBotaoSair="card.ehBotaoSair" :ehBotaoAssinar="card.ehBotaoAssinar"
+            @configActive="abrirOuFecharConfig" />
         </section>
-        <section class="options-config" v-if="ehBotaoConfig === true">
-          <Configuracoes @fecharConfig="showConfigOptions" />
+        <section class="options-config" v-if="ehBotaoConfig">
+          <Configuracoes @fecharConfig="abrirOuFecharConfig" />
         </section>
       </main>
-    </div>
-    <div v-else>
-      <BasePreload />
     </div>
     <ButtonWhatsapp />
   </section>
 </template>
 
 <script setup lang="ts">
-import { auth } from "../../firebase-config";
 import { useValidarAcesso } from "../../servicos/useValidacaoUsuarioStripe";
-import { computed, onBeforeMount, onMounted, onUnmounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { computed, ref, watch } from "vue";
 import LinkCardapio from "./LinkCardapio.vue";
 import Cards from "./Cards.vue";
 import iconeProdutos from "../../../assets/adicionar-produto.png";
@@ -42,121 +38,86 @@ import iconePagar from "../../../assets/pagar.png";
 import iconeSair from "../../../assets/sair.png";
 import { useAuthStore } from "../../stores/authStore";
 import BasePreload from "../../components/ui/BasePreload.vue";
-import { testeGratisAtivoStore } from "../../stores/testeAtivoStore";
 import ButtonWhatsapp from "../../components/ui/ButtonWhatsapp.vue";
 import Configuracoes from "../configuracoes/Configuracoes.vue";
-import { Unsubscribe } from "firebase/auth";
+import { informacoesDoCardapioStore } from "../../stores/informacoesDoCardapioStore";
 
-const router = useRouter();
 const ehBotaoConfig = ref<boolean>(false);
-const uid = computed(() => useAuthStore().uid);
+const informacoesDoCardapio = informacoesDoCardapioStore();
+const authStore = useAuthStore();
+
+const uid = computed(() => authStore.uid);
+const carregando = ref(true);
+
 const planoEmDia = ref(false);
-const usuarioEstaAtivoStore = testeGratisAtivoStore();
+const nomeEstabelecimento = computed(() => informacoesDoCardapio.informacoesDoEstabelecimento?.nomeDoEstabelecimento)
 
-
-
-const testeGratisAtivo = computed(
-  () => usuarioEstaAtivoStore.usuarioEmTeste
-);
-const textoTesteGratis = computed(
-  () => usuarioEstaAtivoStore.quantidadeDeDiasGratis
-);
-
-function showConfigOptions() {
+function abrirOuFecharConfig() {
   ehBotaoConfig.value = !ehBotaoConfig.value;
-  console.log(ehBotaoConfig.value);
 }
 
-let cards = ref<Card[]>([
-  {
-    pagina: "produtos",
-    caminhoIcone: iconeProdutos,
-    texto: "Produtos",
-  },
-  {
-    pagina: "Categorias",
-    caminhoIcone: iconeCategorias,
-    texto: "Categorias",
-  },
-  {
-    pagina: "Adicionais",
-    caminhoIcone: iconeAdicionais,
-    texto: "Adicionais",
-  },
-  {
-    pagina: "Configuracoes",
-    caminhoIcone: iconeConfiguracoes,
-    texto: "Configuracoes",
-  },
-  {
-    pagina: "",
-    caminhoIcone: iconePagar,
-    texto: "",
-    ehBotaoAssinar: true,
-  },
-  {
-    pagina: "Login",
-    caminhoIcone: iconeSair,
-    texto: "Sair",
-    ehBotaoSair: true,
-  },
+const textoBotaoAssinatura = computed(() => planoEmDia.value ? "Gerenciar plano" : "Assinar agora");
+type Card = {
+  pagina: string;
+  caminhoIcone: string;
+  texto: string;
+  ehBotaoSair?: boolean;
+  ehBotaoAssinar?: boolean;
+};
+const cards = computed<Card[]>(() => [
+  { pagina: "produtos", caminhoIcone: iconeProdutos, texto: "Produtos", },
+  { pagina: "Categorias", caminhoIcone: iconeCategorias, texto: "Categorias", },
+  { pagina: "Adicionais", caminhoIcone: iconeAdicionais, texto: "Adicionais", },
+  { pagina: "Configuracoes", caminhoIcone: iconeConfiguracoes, texto: "Configuracoes", },
+  { pagina: "", caminhoIcone: iconePagar, texto: textoBotaoAssinatura.value, ehBotaoAssinar: true, },
+  { pagina: "Login", caminhoIcone: iconeSair, texto: "Sair", ehBotaoSair: true, },
 ]);
 
-const cardsFiltrados = computed(() => {
-  return testeGratisAtivo.value ? cards.value.filter((card) => card.ehBotaoAssinar !== true) : cards.value;
-});
-onBeforeMount(() => {
-  if (!uid.value) {
-    console.log("Uid do usuário não encontrado!");
-    return;
-  }
-});
-let unsubscribeAuth: Unsubscribe;
-onMounted(() => {
-  unsubscribeAuth = auth.onAuthStateChanged(async (user) => {
-    if (!uid.value) {
-      console.log("uid não encontrado");
-      return;
-    }
-    if (!user) {
-      console.log("Usuário não encontrado");
-      router.push("Login");
-    }
-    if (user) {
-      const { statusAcesso, assinaturaAtiva } = useValidarAcesso(user);
-      const cardAssinatura = cards.value.find((c) => c.ehBotaoAssinar);
-  
-      planoEmDia.value = !!(await statusAcesso());
-      textoAssinatura();
-      watch(assinaturaAtiva, (novoValor) => {
-        planoEmDia.value = novoValor;
-        textoAssinatura();
-      });
-  
-      function textoAssinatura() {
-        if (cardAssinatura) {
-          cardAssinatura.texto = planoEmDia.value ? "Gerenciar plano" : "Assinar agora";
-        }
-      }
-      console.log("O uid definido pelo pinia é:", uid);
-  
-      sessionStorage.setItem("usuario", uid.value);
-    }
-  });
-});
+let cancelarObservadorAssinatura: (() => void) | null = null;
 
-onUnmounted(() => {
-  if (unsubscribeAuth) unsubscribeAuth();
-})
+async function carregarDados(uid: string): Promise<boolean> {
+  const acesso = useValidarAcesso();
+  if (!acesso) {
+    return false;
+  }
+  try {
+    await informacoesDoCardapio.puxarInfoDoEstabelecimento(uid);
+
+    const { statusAcesso, assinaturaAtiva } = acesso;
+
+    planoEmDia.value = !!(await statusAcesso());
+
+    if (cancelarObservadorAssinatura) {
+      cancelarObservadorAssinatura();
+    }
+
+    cancelarObservadorAssinatura = watch(assinaturaAtiva, (novoValor) => {
+      planoEmDia.value = novoValor;
+    });
+
+  } catch (erro) {
+    console.error("Falha critica ao carregar os dados do painel:", erro);
+  }
+
+  return false;
+}
+
+watch(uid, async (novoUid) => {
+  if (novoUid) {
+    carregando.value = await carregarDados(novoUid);
+  } else {
+    carregando.value = true;
+  }
+}, { immediate: true });
 </script>
 
 <style scoped>
 main {
-  padding-top: 3rem;
+  padding-top: 0rem;
 }
 
 .sessao-painel-administrativo {
-  padding: 2rem 0;
+  padding: 0;
   color: var(--cor-principal-fonte);
   font-family: var(--fonte-principal);
   height: 100vh;
@@ -230,7 +191,7 @@ header h1 {
   }
 
   main {
-    padding-top: 5rem;
+    padding-top: 1rem;
   }
 }
 </style>
