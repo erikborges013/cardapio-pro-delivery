@@ -176,15 +176,14 @@ import ITaxasDeEntrega from '../../interfaces/ITaxasDeEntrega';
 import { informacoesDoCardapioStore } from '../../stores/informacoesDoCardapioStore';
 import defaultImage from "../../../assets/vetor-sem-imagem.jpg";
 import logoWhatsapp from "../../assets/logo_whatsapp_icon_181638.webp"
+import converterParaNumber from '../../utils/normalizarPreco';
 
-// Stores
 const carrinhoStore = useCarrinhoStore();
 const taxasStore = useTaxasDeEntregaStore();
 const pagamentosStore = formasDePagamentoStore();
 const authStore = useAuthStore();
 const informacoesCardapio = informacoesDoCardapioStore();
 
-// Estados Locais
 const taxaSelecionada = ref<ITaxasDeEntrega | null>(null);
 const form = reactive({
   nome: '',
@@ -196,23 +195,22 @@ const form = reactive({
   troco: ''
 });
 
-// Computed: Total Final
+
 const totalComEntrega = computed(() => {
     const subtotal = carrinhoStore.totalDoPedido;
     const entrega = taxaSelecionada.value ? taxaSelecionada.value.taxa : 0;
-    return subtotal + entrega;
+    
+    return converterParaNumber(subtotal) + converterParaNumber(entrega);
 });
 
-// Computed: Validação
 const formValido = computed(() => {
   const dadosBasicos = form.nome.length > 2 && 
-                       form.rua.length > 3 && 
-                       form.numero.length > 0;
+                       form.rua.length > 1 && 
+                       form.numero.length > 0 &&
+                       form.whatsapp.length > 8; 
   
-  // Se houver taxas cadastradas, obriga a selecionar uma
   const taxaOk = taxasStore.taxas.length > 0 ? taxaSelecionada.value !== null : true;
   
-  // Se houver pagamentos cadastrados, obriga a selecionar um
   const pagamentoOk = pagamentosStore.formasDePagamento && pagamentosStore.formasDePagamento.length > 0 
                       ? form.pagamento !== '' 
                       : true;
@@ -220,12 +218,10 @@ const formValido = computed(() => {
   return dadosBasicos && taxaOk && pagamentoOk;
 });
 
-// Inicialização: Busca dados do Firebase
 onMounted(() => {
     carregarDadosAuxiliares();
 });
 
-// Garante que busca os dados se o UID mudar (ex: login/logout ou recarregamento)
 watch(() => authStore.uid, () => {
     carregarDadosAuxiliares();
 });
@@ -242,11 +238,18 @@ function carregarDadosAuxiliares() {
 function finalizarPedido() {
   if (!formValido.value) return;
 
-  const telefoneEstabelecimento = informacoesCardapio.informacoesDoEstabelecimento?.whatsApp; // Substitua pelo número real ou busque das Configurações
+  const telefoneBruto = informacoesCardapio.informacoesDoEstabelecimento?.whatsApp;
+
+  if (!telefoneBruto) {
+      alert("O telefone do estabelecimento não está configurado. Tente novamente em instantes.");
+      return;
+  }
+
+  const telefoneLimpo = String(telefoneBruto).replace(/\D/g, '');
 
   let msg = `*NOVO PEDIDO - ${informacoesCardapio.informacoesDoEstabelecimento?.nomeDoEstabelecimento}* 🍔\n\n`;
+
   
-  // Cliente
   msg += `👤 *Cliente:* ${form.nome}\n`;
   msg += `📍 *Endereço:* ${form.rua}, ${form.numero}\n`;
   msg += `*Whatsapp:* ${form.whatsapp}`
@@ -257,7 +260,6 @@ function finalizarPedido() {
   }
   msg += `\n--------------------------------\n`;
 
-  // Itens
   carrinhoStore.itens.forEach(item => {
     msg += `▪️ ${item.quantidade}x ${item.nome}\n`;
     if (item.valorTotalAdicionais) {
@@ -271,7 +273,6 @@ function finalizarPedido() {
      msg += `--------------------------------\n`;
   });
 
-  // Totais
   msg += `💰 *Subtotal:* ${converterEmReais(carrinhoStore.totalDoPedido)}\n`;
   
   if (taxaSelecionada.value) {
@@ -283,7 +284,6 @@ function finalizarPedido() {
   msg += `💵 *TOTAL FINAL:* ${converterEmReais(totalComEntrega.value)}\n`;
   msg += `--------------------------------\n`;
   
-  // Pagamento
   if (form.pagamento) {
       msg += `💳 *Pagamento:* ${form.pagamento}\n`;
       if(form.pagamento === 'Dinheiro' && form.troco) {
@@ -295,7 +295,7 @@ function finalizarPedido() {
   
   msg += `\nAguardo confirmação!`;
 
-  const urlWhatsApp = `https://wa.me/${telefoneEstabelecimento}?text=${encodeURIComponent(msg)}`;
+  const urlWhatsApp = `https://wa.me/55${telefoneLimpo}?text=${encodeURIComponent(msg)}`;
   window.open(urlWhatsApp, '_blank');
 }
 </script>
@@ -303,12 +303,10 @@ function finalizarPedido() {
 <style scoped>
 @reference "../../assets/tailwind.css";
 
-/* Estilos de inputs */
 .input-padrao {
   @apply w-full bg-gray-50 border border-gray-200 text-gray-800 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none transition;
 }
 
-/* Botões de Pagamento */
 .btn-pagamento {
   @apply border border-gray-200 bg-gray-50 text-gray-600 rounded-lg py-3 text-sm font-medium hover:bg-gray-100 transition shadow-sm;
 }
@@ -317,7 +315,6 @@ function finalizarPedido() {
   @apply bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500 font-bold shadow-md shadow-blue-500/10;
 }
 
-/* Animações (Slide-in) */
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: opacity 0.3s ease;
