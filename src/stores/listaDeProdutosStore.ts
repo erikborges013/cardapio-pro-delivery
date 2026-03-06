@@ -13,6 +13,7 @@ export const listaDeProdutos = defineStore("produtos", {
 
     actions: {
         async buscarProdutos(userId?: string) {
+            this.produtos = [];
             const uid = userId || useAuthStore().uid;
             if (!uid) {
                 console.log("uid não encontrado");
