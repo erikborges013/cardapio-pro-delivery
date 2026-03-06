@@ -2,11 +2,13 @@ import { collection, getDocs, onSnapshot } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { db } from "../firebase-config";
 import Categoria from "../interfaces/ICategoria";
+import { useAuthStore } from "./authStore";
 
 type dadosCategoria = {
   nome: string,
   ordem: number,
 }
+const usuario = useAuthStore();
 
 export const useCategoriaStore = defineStore("categorias", {
   state: () => ({
@@ -17,7 +19,13 @@ export const useCategoriaStore = defineStore("categorias", {
 
   actions: {
 
-    async puxarCategorias(userId: string) {
+    async puxarCategorias(uidVindoDoCardapio?: string) {
+      this.categorias = [];
+      const userId = uidVindoDoCardapio || usuario.uid;
+      if (!userId) {
+        console.log("Uid do usuário não encontrado");
+        return;
+      }
       const categoriasRef = collection(db, "usuarios", userId, "categorias");
       const documento = await getDocs(categoriasRef);
 

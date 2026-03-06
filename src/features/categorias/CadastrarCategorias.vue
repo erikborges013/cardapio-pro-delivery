@@ -65,6 +65,10 @@ function voltarParaLista() {
 
 async function cadastrarOuEditar() {
   const dados = montarDados();
+  if (!dados.nome || !dados.ordem) {
+    alert("Preencha todos os campos");
+    return;
+  }
   if (categoriaEmEdicao !== null) {
     feedbackSalvando.value = "Atualizando...";
     statusBotao.value = true;

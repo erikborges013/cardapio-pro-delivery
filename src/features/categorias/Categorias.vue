@@ -30,7 +30,7 @@ onBeforeMount(() => {
         alert("Usuário não encontrado!");
         return;
     }
-    storeCategorias.puxarCategorias(uid);
+    storeCategorias.puxarCategorias();
 })
 
 const categorias = computed(() => {

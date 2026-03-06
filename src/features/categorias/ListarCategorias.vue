@@ -38,6 +38,7 @@ const router = useRouter();
     }
     try {
       await deletar(id);
+      await storeCategorias.puxarCategorias();
     } catch (error) {
       console.error("Erro ao tentar excluir categoria", error);
     }

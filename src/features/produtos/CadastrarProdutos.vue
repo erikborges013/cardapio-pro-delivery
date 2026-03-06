@@ -81,7 +81,7 @@ onBeforeMount(() => {
     console.log("uid não encontrado");
     return;
   }
-  categoriasDados.puxarCategorias(userId);
+  categoriasDados.puxarCategorias();
   adicionaisDados.puxarAdicionais(userId);
 })
 const produtosStore = listaDeProdutos();
